@@ -34,7 +34,7 @@ export default function ChatBottombar({
       <div className="w-full flex flex-col relative">
         <form
           onSubmit={handleFormSubmit}
-          className="w-full items-center flex relative bg-accent "
+          className="w-full items-center flex relative bg-accent rounded-lg"
         >
           <div className="flex items-center w-full">
             <TextareaAutosize

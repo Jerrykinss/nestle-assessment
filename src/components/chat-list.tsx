@@ -30,17 +30,16 @@ export default function ChatList({
       <div className="w-full flex flex-col overflow-x-hidden overflow-y-hidden justify-end ">
         {messages.map((message, index) => (
           <div
-            key={message.id || index}
-            className={`flex p-3 items-center ${
-              message.role === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
-            <div className="flex items-end gap-3 markdown-content bg-accent rounded-lg">
-              <span className="bg-accent p-3 rounded-md max-w-xl overflow-x-auto">
-                <ReactMarkdown>{message.content}</ReactMarkdown>
-              </span>
-            </div>
+          key={message.id || index}
+          className={`flex p-3 items-start ${message.role === "user" ? "justify-end" : "justify-start"}`}
+        >
+          <div className="flex flex-col items-start gap-2 bg-accent rounded-lg p-3 max-w-xl">
+            <p className="text-sm font-bold">{message.role === "user" ? "User" : "Nestle"}</p>
+            <span className="markdown-content">
+              <ReactMarkdown>{message.content}</ReactMarkdown>
+            </span>
           </div>
+        </div>
         ))}
       </div>
       <div id="anchor" ref={bottomRef}></div>
