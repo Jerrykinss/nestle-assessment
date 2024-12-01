@@ -3,37 +3,38 @@
 import React, { useEffect, useState, useRef } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { IoMdSend } from "react-icons/io";
+import { ChatRequestOptions } from "ai";
 
 export interface ChatBottombarProps {
+  input: string;
+  handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  handleSubmit: (
+    e: React.FormEvent<HTMLFormElement>,
+    chatRequestOptions?: ChatRequestOptions
+  ) => void;
+  isLoading: boolean;
 }
 
 export default function ChatBottombar({
+  input,
+  handleInputChange,
+  handleSubmit,
+  isLoading,
 }: ChatBottombarProps) {
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
-  const [input, setInput] = useState("");
-
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!input) return;
-    setInput("");
-  };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleFormSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
+      handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
     }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
   };
 
   return (
     <div className="p-4 flex flex-col justify-between w-full items-center">
       <div className="w-full flex flex-col relative">
         <form
-          onSubmit={handleFormSubmit}
+          onSubmit={handleSubmit}
           className="w-full items-center flex relative bg-accent rounded-lg"
         >
           <div className="flex items-center w-full">
@@ -50,6 +51,7 @@ export default function ChatBottombar({
             <button
               className="flex rounded-full w-8 h-8 items-center justify-center m-2"
               type="submit"
+              disabled={isLoading}
             >
               <IoMdSend className="w-6 h-6" />
             </button>
