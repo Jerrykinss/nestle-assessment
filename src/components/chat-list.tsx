@@ -11,8 +11,8 @@ export default function ChatList({
   const messages = [
     { id: 1, role: "user", content: "Item 1" },
     { id: 2, role: "assistant", content: "Item 2" },
-    { id: 3, role: "user", content: "Item 3" },
-    { id: 4, role: "assistant", content: "Item 4" },
+    { id: 3, role: "user", content: "This is a very long Item 3 in order to test the maximum size of the user message box. Here I will write some extra words to make it more clear." },
+    { id: 4, role: "assistant", content: "This is a very long Item 4 in order to test the maximum size of the assistant message box. Here I will write some extra words to make it more clear." },
   ];
 
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -31,26 +31,15 @@ export default function ChatList({
         {messages.map((message, index) => (
           <div
             key={message.id || index}
-            className={`flex gap-3 items-center border-2 border-black ${
+            className={`flex p-3 items-center ${
               message.role === "user" ? "justify-end" : "justify-start"
             }`}
           >
-            {message.role === "user" && (
-              <div className="flex items-end gap-3 markdown-content ">
-                <span className="bg-accent p-3 rounded-md max-w-xs sm:max-w-2xl overflow-x-auto">
-                  <ReactMarkdown>{message.content}</ReactMarkdown>
-                </span>
-              </div>
-            )}
-            {message.role === "assistant" && (
-              <div className="flex items-end gap-2">
-                <div className="flex flex-col gap-2 bg-accent p-3 rounded-md max-w-xs sm:max-w-2xl overflow-x-auto markdown-content">
-                  <span>
-                    <ReactMarkdown>{message.content}</ReactMarkdown>
-                  </span>
-                </div>
-              </div>
-            )}
+            <div className="flex items-end gap-3 markdown-content bg-accent rounded-lg">
+              <span className="bg-accent p-3 rounded-md max-w-xl overflow-x-auto">
+                <ReactMarkdown>{message.content}</ReactMarkdown>
+              </span>
+            </div>
           </div>
         ))}
       </div>

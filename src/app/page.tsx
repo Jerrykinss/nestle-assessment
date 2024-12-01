@@ -10,7 +10,7 @@ export default function Home() {
     <main className="flex h-[calc(100dvh)] flex-col items-center">
       <div className="relative flex h-full w-full">
         <div className="flex flex-col justify-between w-full h-full">
-          <div className="flex flex-col justify-between w-full max-w-4xl h-full mx-auto overflow-hidden border-2 border-black">
+          <div className="flex flex-col justify-between w-full max-w-4xl h-full mx-auto overflow-hidden border-2 border-black bg-background">
             <ChatList/>
             <ChatBottombar/>
           </div>
