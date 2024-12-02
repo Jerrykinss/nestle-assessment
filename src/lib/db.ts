@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
 import sql, { ConnectionPool, config as SqlConfig } from 'mssql';
 
 const config: SqlConfig = {
