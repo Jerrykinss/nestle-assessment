@@ -9,6 +9,7 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
     try {
         const { searchParams } = new URL(req.url);
         const url = searchParams.get('url');
+        console.log('Requested URL:', url);
 
         if (!url) {
             return NextResponse.json(
@@ -23,12 +24,12 @@ export const GET = async (req: NextRequest): Promise<NextResponse> => {
             .request()
             .input('url', url)
             .query<ScrapedData[]>(
-                'SELECT html FROM scraped_data WHERE url = @url'
+                'SELECT text_content FROM scraped_data WHERE url = @url'
             );
 
         if (result.recordset.length === 0) {
             return NextResponse.json(
-                { error: 'No HTML found for the provided URL, check spelling.' },
+                { error: 'No text contents found for the provided URL, check spelling.' },
                 { status: 404 }
             );
         }

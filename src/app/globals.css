@@ -16,3 +16,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+.markdown-content a {
+  color: #3366CC;
+  text-decoration: underline;
+}
