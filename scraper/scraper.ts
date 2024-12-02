@@ -18,84 +18,59 @@ const scrapePage = async (page: Page, options: ScraperOptions): Promise<void> =>
   console.log(`Scraping: ${targetUrl}`);
 
   try {
+    // Navigate to the target URL
     await page.goto(targetUrl, { waitUntil: 'networkidle0' });
 
     // Wait for dynamic content to load
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // Get the fully rendered HTML
-    const html = await page.evaluate(() => document.documentElement.outerHTML);
+    // Extract and clean the text content
+    const cleanTextContent = await page.evaluate(() => {
+      // Helper function to remove unwanted nodes
+      const removeUnwantedNodes = (selectors: string[]) => {
+        selectors.forEach((selector) => {
+          document.querySelectorAll(selector).forEach((node) => node.remove());
+        });
+      };
 
-    // Check if the HTML already exists in the database
-    const duplicateCheckQuery = `
-      SELECT COUNT(*) AS count
-      FROM scraped_data
-      WHERE html = @html;
+      // Remove script, style, meta, iframe, and noscript elements
+      removeUnwantedNodes(['script', 'style', 'meta', 'iframe', 'noscript']);
+
+      // Remove elements that are invisible or not meaningful
+      document.querySelectorAll('*').forEach((el) => {
+        const style = window.getComputedStyle(el);
+        if (
+          style.display === 'none' ||
+          style.visibility === 'hidden' ||
+          style.opacity === '0'
+        ) {
+          el.remove();
+        }
+      });
+
+      // Extract the cleaned text content from the body
+      const body = document.body;
+      return body && body.textContent
+        ? body.textContent
+            .replace(/\s+/g, ' ')
+            .trim()
+        : '';
+    });
+
+    // Insert the cleaned text into the database
+    const insertQuery = `
+      INSERT INTO scraped_data (url, text_content)
+      VALUES (@url, @text_content);
     `;
-    const duplicateCheckResult = await dbPool
+    await dbPool
       .request()
-      .input('html', html)
-      .query(duplicateCheckQuery);
+      .input('url', targetUrl)
+      .input('text_content', cleanTextContent)
+      .query(insertQuery);
 
-    const duplicateUrlCheckQuery = `
-      SELECT COUNT(*) AS count
-      FROM scraped_data
-      WHERE url = @targetUrl;
-    `;
-    const duplicateUrlCheckResult = await dbPool
-      .request()
-      .input('targetUrl', targetUrl)
-      .query(duplicateUrlCheckQuery);
+    console.log(`Inserted: ${targetUrl}`);
 
-    const isDuplicate = duplicateCheckResult.recordset[0].count > 0 || duplicateUrlCheckResult.recordset[0].count > 0;
-
-    if (isDuplicate) {
-      console.log(`Duplicate HTML found, skipping: ${targetUrl}`);
-    } else {
-      // Check if the URL already exists
-      const urlCheckQuery = `
-        SELECT COUNT(*) AS count
-        FROM scraped_data
-        WHERE url = @url;
-      `;
-      const urlCheckResult = await dbPool
-        .request()
-        .input('url', targetUrl)
-        .query(urlCheckQuery);
-
-      const urlExists = urlCheckResult.recordset[0].count > 0;
-
-      if (urlExists) {
-        // Update the existing row with the new HTML
-        const updateQuery = `
-          UPDATE scraped_data
-          SET html = @html
-          WHERE url = @url;
-        `;
-        await dbPool
-          .request()
-          .input('url', targetUrl)
-          .input('html', html)
-          .query(updateQuery);
-
-        console.log(`Updated: ${targetUrl}`);
-      } else {
-        // Insert a new row if the URL doesn't exist
-        const insertQuery = `
-          INSERT INTO scraped_data (url, html)
-          VALUES (@url, @html);
-        `;
-        await dbPool
-          .request()
-          .input('url', targetUrl)
-          .input('html', html)
-          .query(insertQuery);
-
-        console.log(`Inserted: ${targetUrl}`);
-      }
-    }
-
-    // Extract links from the rendered page
+    // Extract links from the page for recursive scraping
     const links = await page.evaluate(() => {
       const anchors = Array.from(document.querySelectorAll('a[href]')) as HTMLAnchorElement[];
       return anchors.map((a) => a.href);
@@ -103,8 +78,8 @@ const scrapePage = async (page: Page, options: ScraperOptions): Promise<void> =>
 
     // Filter links to include only those on the target domain and not visited
     const filteredLinks = links.filter((link: string) => {
-      const isOnTargetDomain = link.includes('madewithnestle.ca');
-      const hasQueryParams = link.includes('?');
+      const isOnTargetDomain = link.includes('madewithnestle.ca'); // Adjust domain as needed
+      const hasQueryParams = link.includes('?') || link.includes('#');
       return isOnTargetDomain && !hasQueryParams && !visitedUrls.has(link);
     });
 
@@ -116,6 +91,7 @@ const scrapePage = async (page: Page, options: ScraperOptions): Promise<void> =>
     console.error(`Error scraping ${targetUrl}:`, error);
   }
 };
+
 
 
 
