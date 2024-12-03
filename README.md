@@ -28,25 +28,25 @@ cd nestle-assessment
 mv .example.env .env
 ```
 
-**5. Install dependencies:**
+**4. Install dependencies:**
 
 ```
 npm install
 ```
 
-**6. Run web scraper:**
+**5. Run web scraper:**
 
 ```
 node --loader ts-node/esm scraper/scraper.ts
 ```
 
-**7. Start the development server:**
+**6. Start the development server:**
 
 ```
 npm run dev
 ```
 
-**8. Go to [localhost:3000](http://localhost:3000) to use**
+**7. Go to [localhost:3000](http://localhost:3000) to use**
 
 # Tech stack
 
