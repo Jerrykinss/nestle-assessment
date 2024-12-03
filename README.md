@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nestle AI Chatbot Technical Assessment
 
-## Getting Started
+## Requisites
 
-First, run the development server:
+To run locally, you need the following
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+**1. OpenAI API account with funds**
+
+**2. Database with table `scraped_data` and columns `id`, `url` and `text_content`**
+
+## Install from source
+
+**1. Clone the repository to a directory on your PC:**
+
+```
+git clone https://github.com/Jerrykinss/nestle-assessment
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**2. Open the folder:**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+cd nestle-assessment
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**3. Rename the `.example.env` to `.env` and populate with your own OpenAI API key and database connection variables:**
 
-## Learn More
+```
+mv .example.env .env
+```
 
-To learn more about Next.js, take a look at the following resources:
+**5. Install dependencies:**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+npm install
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**6. Run web scraper:**
 
-## Deploy on Vercel
+```
+node --loader ts-node/esm scraper/scraper.ts
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**7. Start the development server:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+npm run dev
+```
+
+**8. Go to [localhost:3000](http://localhost:3000) to use**
+
+# Tech stack
+
+[NextJS](https://nextjs.org/) - React Framework for the Web
+
+[TailwindCSS](https://tailwindcss.com/) - Utility-first CSS framework
+
+[OpenAI API](https://platform.openai.com/) - API for interaction with LLM (gpt-4o-mini)
+
+# Prompts
+
+[System Prompt](src/app/api/chat/route.ts)
+
+[Content Retrieval Prompt](src/app/page.tsx)
+
+# Limitations
+
+The AI only retrieves the contents of one page at a time. This is chosen from a list of URLs of all available pages. Since the chatbot cannot know the page contents beforehand, it may choose to view the wrong URL, or realize after that the page does not contain the information it needs. However, the chatbot is configured such that if this situation occurs, it can ask the user for permission to search another webpage for required information.
