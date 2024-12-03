@@ -3,10 +3,10 @@ dotenv.config({ path: '.env.local' });
 import sql, { ConnectionPool, config as SqlConfig } from 'mssql';
 
 const config: SqlConfig = {
-    user: process.env.AZURE_SQL_USER || '',
-    password: process.env.AZURE_SQL_PASSWORD || '',
-    server: process.env.AZURE_SQL_SERVER || '',
-    database: process.env.AZURE_SQL_DATABASE || '',
+    user: process.env.SQL_USER || '',
+    password: process.env.SQL_PASSWORD || '',
+    server: process.env.SQL_SERVER || '',
+    database: process.env.SQL_DATABASE || '',
     options: {
         encrypt: true,
         enableArithAbort: true,
